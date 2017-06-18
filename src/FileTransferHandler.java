@@ -28,7 +28,7 @@ public class FileTransferHandler extends TransferHandler {
 
             for (Object item : data) {
                 File file = (File) item;
-                classySearch.fileDragged(file);
+                classySearch.onFileDragged(file);
             }
 
             return true;

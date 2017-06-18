@@ -30,12 +30,12 @@ public class ClassySharkBytecodeViewer extends JFrame {
         JPanel cp = new JPanel(new BorderLayout());
 
         textArea = new JTextArea(30, 90);
-
         textArea.setFont(new Font("Menlo", Font.PLAIN, 18));
         textArea.setText(SharkBG.SHARKEY);
 
         textArea.setBackground(Color.BLACK);
         textArea.setForeground(Color.CYAN);
+        textArea.setTransferHandler(new FileTransferHandler(this));
 
         JScrollPane sp = new JScrollPane(textArea);
         cp.add(sp);
@@ -45,14 +45,11 @@ public class ClassySharkBytecodeViewer extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setLocationRelativeTo(null);
-
-        textArea.setTransferHandler(new FileTransferHandler(this));
-
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void fileDragged(File file) {
-
-        InputStream inputStream = null;
+    public void onFileDragged(File file) {
+        InputStream inputStream;
         try {
             inputStream = new FileInputStream(file);
             ClassReader reader = new ClassReader(inputStream);
@@ -87,10 +84,8 @@ public class ClassySharkBytecodeViewer extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-
                 ClassySharkBytecodeViewer csbv = new ClassySharkBytecodeViewer();
                 csbv.setVisible(true);
-                csbv.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
