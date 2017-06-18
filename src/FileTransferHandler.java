@@ -7,10 +7,10 @@ import javax.swing.TransferHandler;
 
 public class FileTransferHandler extends TransferHandler {
 
-    private final ClassySharkBytecodeViewer classySearch;
+    private final ClassySharkBytecodeViewer classySharkBytecodeViewer;
 
     public FileTransferHandler(ClassySharkBytecodeViewer classySearch) {
-        this.classySearch = classySearch;
+        this.classySharkBytecodeViewer = classySearch;
     }
 
     public boolean canImport(TransferSupport ts) {
@@ -28,7 +28,7 @@ public class FileTransferHandler extends TransferHandler {
 
             for (Object item : data) {
                 File file = (File) item;
-                classySearch.onFileDragged(file);
+                classySharkBytecodeViewer.onFileDragged(file);
             }
 
             return true;
