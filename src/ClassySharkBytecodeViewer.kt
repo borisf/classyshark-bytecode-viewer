@@ -27,7 +27,7 @@ constructor() : JFrame() {
         cp.add(sp)
 
         contentPane = cp
-        title = "ClassyShark Byte Code Viewer"
+        title = "ClassyShark Byte Code Viewer - drag your .class file into the shark"
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         pack()
         setLocationRelativeTo(null)
@@ -38,10 +38,10 @@ constructor() : JFrame() {
         try {
             inputStream = FileInputStream(file)
             val reader = ClassReader(inputStream)
-            val dw = StringWriter()
-            val visitor = TraceClassVisitor(PrintWriter(dw))
+            val asmCode = StringWriter()
+            val visitor = TraceClassVisitor(PrintWriter(asmCode))
             reader.accept(visitor, ClassReader.EXPAND_FRAMES)
-            textArea.text = dw.toString()
+            textArea.text = asmCode.toString()
 
             // // Start capturing
             val buffer = ByteArrayOutputStream()
