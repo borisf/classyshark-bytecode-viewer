@@ -36,12 +36,6 @@ constructor() : JFrame() {
     fun onFileDragged(file: File) {
         val inputStream: InputStream
         try {
-            inputStream = FileInputStream(file)
-            val reader = ClassReader(inputStream)
-            val asmCode = StringWriter()
-            val visitor = TraceClassVisitor(PrintWriter(asmCode))
-            reader.accept(visitor, ClassReader.EXPAND_FRAMES)
-            textArea.text = asmCode.toString()
 
             // // Start capturing
             val buffer = ByteArrayOutputStream()
@@ -57,7 +51,16 @@ constructor() : JFrame() {
             val content = buffer.toString()
             buffer.reset()
 
-            textArea.append("\n\n\n\n\n " + content)
+            textArea.text = content
+
+            inputStream = FileInputStream(file)
+            val reader = ClassReader(inputStream)
+            val asmCode = StringWriter()
+            val visitor = TraceClassVisitor(PrintWriter(asmCode))
+            reader.accept(visitor, ClassReader.EXPAND_FRAMES)
+            textArea.append("\n\n================================\n\n\n"
+                    + asmCode.toString())
+            textArea.caretPosition = 0
 
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
