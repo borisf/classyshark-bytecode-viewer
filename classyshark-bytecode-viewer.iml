@@ -11,5 +11,6 @@
     <orderEntry type="library" name="asm-all-5.2" level="project" />
     <orderEntry type="library" name="rsyntaxtextarea-2.6.1" level="project" />
     <orderEntry type="library" name="cfr_0_122" level="project" />
+    <orderEntry type="library" name="procyon-decompiler-0.5.30" level="project" />
   </component>
 </module>

@@ -1,8 +1,8 @@
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.TraceClassVisitor
-import java.awt.BorderLayout
 import java.awt.Color
+import java.awt.Dimension
 import java.awt.Font
 import java.io.*
 import javax.swing.*
@@ -10,21 +10,39 @@ import javax.swing.*
 class ClassySharkBytecodeViewer @Throws(Exception::class)
 constructor() : JFrame() {
 
-    internal var textArea: JTextArea
+    internal var javaArea: JTextPane
+    internal var asmArea: JTextPane
+    internal var ASM: String = ""
+    val BACKGROUND = Color(46, 48,50)
 
     init {
-        val cp = JPanel(BorderLayout())
+        val cp = JPanel()
+        cp.layout = BoxLayout(cp, BoxLayout.X_AXIS)
 
-        textArea = JTextArea(30, 90)
-        textArea.font = Font("Menlo", Font.PLAIN, 18)
-        textArea.text = SharkBG.SHARKEY
+        preferredSize = Dimension(1200, 800)
 
-        textArea.background = Color.BLACK
-        textArea.foreground = Color.CYAN
-        textArea.transferHandler = FileTransferHandler(this)
+        javaArea = SyntaxPane()
+        javaArea.font = Font("Menlo", Font.PLAIN, 18)
+        javaArea.text = SharkBG.SHARKEY
 
-        val sp = JScrollPane(textArea)
+
+        javaArea.background = BACKGROUND
+        javaArea.foreground = Color.CYAN
+        javaArea.transferHandler = FileTransferHandler(this)
+
+        val sp = JScrollPane(javaArea)
         cp.add(sp)
+
+        asmArea = SyntaxPane()
+        asmArea.font = Font("Menlo", Font.PLAIN, 18)
+        asmArea.text = SharkBG.SHARKEY
+        asmArea.transferHandler = FileTransferHandler(this)
+        asmArea.background = BACKGROUND
+        asmArea.foreground = Color.CYAN
+
+        val sp1 = JScrollPane(asmArea)
+
+        cp.add(sp1)
 
         contentPane = cp
         title = "ClassyShark Byte Code Viewer - drag your .class file into the shark"
@@ -42,7 +60,7 @@ constructor() : JFrame() {
             System.setOut(PrintStream(buffer))
 
             // Run what is supposed to output something
-            org.benf.cfr.reader.Main.main(arrayOf(file.absolutePath))
+            com.strobel.decompiler.DecompilerDriver.main(arrayOf(file.absolutePath))
 
             // Stop capturing
             System.setOut(PrintStream(FileOutputStream(FileDescriptor.out)))
@@ -51,16 +69,17 @@ constructor() : JFrame() {
             val content = buffer.toString()
             buffer.reset()
 
-            textArea.text = content
+            javaArea.text = content
+            javaArea.caretPosition = 0
 
             inputStream = FileInputStream(file)
             val reader = ClassReader(inputStream)
             val asmCode = StringWriter()
             val visitor = TraceClassVisitor(PrintWriter(asmCode))
             reader.accept(visitor, ClassReader.EXPAND_FRAMES)
-            textArea.append("\n\n================================\n\n\n"
-                    + asmCode.toString())
-            textArea.caretPosition = 0
+            asmArea.text = asmCode.toString()
+            ASM = asmCode.toString()
+            asmArea.caretPosition = 0
 
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
