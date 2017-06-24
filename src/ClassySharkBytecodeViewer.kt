@@ -16,8 +16,8 @@ constructor() : JFrame() {
     val BACKGROUND = Color(46, 48,50)
 
     init {
-        val cp = JPanel()
-        cp.layout = BoxLayout(cp, BoxLayout.X_AXIS)
+        val mainPanel = JPanel()
+        mainPanel.layout = BoxLayout(mainPanel, BoxLayout.X_AXIS)
 
         preferredSize = Dimension(1200, 800)
 
@@ -30,21 +30,20 @@ constructor() : JFrame() {
         javaArea.foreground = Color.CYAN
         javaArea.transferHandler = FileTransferHandler(this)
 
-        val sp = JScrollPane(javaArea)
-        cp.add(sp)
+        val javaScrollPane = JScrollPane(javaArea)
+        mainPanel.add(javaScrollPane)
 
         asmArea = SyntaxPane()
         asmArea.font = Font("Menlo", Font.PLAIN, 18)
-        asmArea.text = SharkBG.SHARKEY
         asmArea.transferHandler = FileTransferHandler(this)
         asmArea.background = BACKGROUND
-        asmArea.foreground = Color.CYAN
+        asmArea.foreground = SyntaxPane.NAMES
+        asmArea.text = SharkBG.SHARKEY
 
-        val sp1 = JScrollPane(asmArea)
+        val asmScrollPane = JScrollPane(asmArea)
+        mainPanel.add(asmScrollPane)
 
-        cp.add(sp1)
-
-        contentPane = cp
+        contentPane = mainPanel
         title = "ClassyShark Byte Code Viewer - drag your .class file into the shark"
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         pack()

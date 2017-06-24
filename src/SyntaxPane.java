@@ -19,32 +19,39 @@ public class SyntaxPane extends JTextPane {
     static final Color SELECTION_BG = new Color(7, 56, 66);
     static final Color NAMES = new Color(88, 110, 117);
 
-    final static Set reservedWords = new HashSet<String>();
+    private final static Set KEY_WORDS = new HashSet<String>();
 
     static {
-        reservedWords.add("class");
-        reservedWords.add("import");
-        reservedWords.add("class");
-        reservedWords.add("public");
-        reservedWords.add("private");
-        reservedWords.add("null");
-        reservedWords.add("static");
-        reservedWords.add("return");
-        reservedWords.add("void");
-        reservedWords.add("for");
-        reservedWords.add("while");
-        reservedWords.add("final");
-        reservedWords.add("if");
-        reservedWords.add("else");
-        reservedWords.add("package");
+        KEY_WORDS.add("class");
+        KEY_WORDS.add("import");
+        KEY_WORDS.add("class");
+        KEY_WORDS.add("public");
+        KEY_WORDS.add("private");
+        KEY_WORDS.add("null");
+        KEY_WORDS.add("static");
+        KEY_WORDS.add("return");
+        KEY_WORDS.add("void");
+        KEY_WORDS.add("for");
+        KEY_WORDS.add("while");
+        KEY_WORDS.add("final");
+        KEY_WORDS.add("if");
+        KEY_WORDS.add("else");
+        KEY_WORDS.add("package");
+        KEY_WORDS.add("abstract");
+        KEY_WORDS.add("interface");
 
         //<<<<<<<<<<<<<<<
-        reservedWords.add("INNERCLASS");
-        reservedWords.add("FRAME FULL");
+        KEY_WORDS.add("INNERCLASS");
+        KEY_WORDS.add("FRAME FULL");
     }
 
     @Override
     public void setText(String text) {
+        if(text.equals(SharkBG.SHARKEY)) {
+            super.setText(text);
+            return;
+        }
+
         super.setText("");
 
         StringBuilder currentWord = new StringBuilder();
@@ -57,7 +64,7 @@ public class SyntaxPane extends JTextPane {
                 } else if (isLabel(currentWord.toString())) {
                     appendToPane(currentWord.toString(), ANNOTATIONS);
                 } else if (isCompound(currentWord.toString())) {
-                    appendToPane(currentWord.toString(), KEYWORDS);
+                    appendToPane(currentWord.toString(), NAMES);
                 } else {
                     appendToPane(currentWord.toString(), DEFAULT);
                 }
@@ -79,7 +86,7 @@ public class SyntaxPane extends JTextPane {
     }
 
     private boolean isKeyword(String word) {
-        return reservedWords.contains(word);
+        return KEY_WORDS.contains(word);
     }
 
     public void appendToPane(String msg, Color c) {
