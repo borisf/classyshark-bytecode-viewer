@@ -2,3 +2,11 @@
 *.class
 
 .idea/libraries/procyon_decompiler_0_5_30.xml
+
+.idea/artifacts/classyshark_bytecode_viewer_jar.xml
+
+.idea/workspace.xml
+
+.idea/workspace.xml
+
+out/production/classyshark-bytecode-viewer/META-INF/MANIFEST.MF
