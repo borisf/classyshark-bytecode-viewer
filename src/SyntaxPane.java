@@ -17,7 +17,7 @@ public class SyntaxPane extends JTextPane {
     static final Color KEYWORDS = new Color(133, 153, 0);
     static final Color ANNOTATIONS = new Color(108, 113, 196);
     static final Color SELECTION_BG = new Color(7, 56, 66);
-    static final Color NAMES = new Color(88, 110, 117);
+    public static final Color NAMES = new Color(88, 110, 117);
 
     private final static Set KEY_WORDS = new HashSet<String>();
 

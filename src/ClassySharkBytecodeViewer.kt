@@ -16,10 +16,20 @@ constructor() : JFrame() {
     val BACKGROUND = Color(46, 48,50)
 
     init {
-        val mainPanel = JPanel()
-        mainPanel.layout = BoxLayout(mainPanel, BoxLayout.X_AXIS)
 
-        preferredSize = Dimension(1200, 800)
+        val mainPanel = JPanel()
+        mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)
+
+        val textField = JTextField()
+        textField.font = Font("Menlo", Font.PLAIN, 18)
+        textField.background = Color(88, 110, 117)
+        textField.foreground = Color.CYAN
+        mainPanel.add(textField)
+
+        val resultPanel = JPanel()
+        resultPanel.layout = BoxLayout(resultPanel, BoxLayout.X_AXIS)
+
+        preferredSize = Dimension(1230, 650)
 
         javaArea = SyntaxPane()
         javaArea.font = Font("Menlo", Font.PLAIN, 18)
@@ -31,7 +41,7 @@ constructor() : JFrame() {
         javaArea.transferHandler = FileTransferHandler(this)
 
         val javaScrollPane = JScrollPane(javaArea)
-        mainPanel.add(javaScrollPane)
+        resultPanel.add(javaScrollPane)
 
         asmArea = SyntaxPane()
         asmArea.font = Font("Menlo", Font.PLAIN, 18)
@@ -41,7 +51,19 @@ constructor() : JFrame() {
         asmArea.text = SharkBG.SHARKEY
 
         val asmScrollPane = JScrollPane(asmArea)
-        mainPanel.add(asmScrollPane)
+        resultPanel.add(asmScrollPane)
+        mainPanel.add(resultPanel)
+
+        // TODO rename, as it works
+        val isearch = IncrementalSearch(asmArea)
+        val isearch1 = IncrementalSearch(javaArea)
+
+        textField.document.addDocumentListener(isearch)
+        textField.addActionListener(isearch)
+
+        textField.document.addDocumentListener(isearch1)
+        textField.addActionListener(isearch1)
+
 
         contentPane = mainPanel
         title = "ClassyShark Byte Code Viewer - drag your .class file into the shark"
