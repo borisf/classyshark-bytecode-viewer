@@ -3,10 +3,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -15,6 +11,7 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 public class IncrementalSearch implements DocumentListener, ActionListener {
+    private static final Color HIGHLIGHTER_COLOR = new Color(88, 110, 117);
     protected JTextComponent content;
     protected Matcher matcher;
 
@@ -49,7 +46,6 @@ public class IncrementalSearch implements DocumentListener, ActionListener {
             matcher = pattern.matcher(body);
             continueSearch();
         } catch (Exception ex) {
-            p("exception: " + ex);
             ex.printStackTrace();
         }
     }
@@ -68,7 +64,7 @@ public class IncrementalSearch implements DocumentListener, ActionListener {
                     content.getCaret().moveDot(matcher.end());
 
                     DefaultHighlighter.DefaultHighlightPainter highlightPainter =
-                            new DefaultHighlighter.DefaultHighlightPainter(new Color(88, 110, 117));
+                            new DefaultHighlighter.DefaultHighlightPainter(HIGHLIGHTER_COLOR);
 
                     try {
                         content.getHighlighter().addHighlight(matcher.start(),
@@ -82,26 +78,4 @@ public class IncrementalSearch implements DocumentListener, ActionListener {
             }
         }
     }
-
-
-    public static void main(String[] args) {
-        JTextArea text_area = new JTextArea(10, 20);
-        JScrollPane scroll = new JScrollPane(text_area);
-        IncrementalSearch isearch = new IncrementalSearch(text_area);
-
-        JTextField search_field = new JTextField();
-        search_field.getDocument().addDocumentListener(isearch);
-        search_field.addActionListener(isearch);
-
-        JFrame frame = new JFrame("Incremental Search Hack");
-        frame.getContentPane().add("North", search_field);
-        frame.getContentPane().add("Center", scroll);
-        frame.pack();
-        frame.show();
-    }
-
-    public static void p(String str) {
-        System.out.println(str);
-    }
-
 }
