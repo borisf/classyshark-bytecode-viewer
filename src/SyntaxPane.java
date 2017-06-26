@@ -11,14 +11,10 @@ import javax.swing.text.StyleContext;
 
 public class SyntaxPane extends JTextPane {
 
-    static final Color BACKGROUND_LIGHT = new Color(46, 48, 50);
-    static final Color IDENTIFIERS = new Color(0xFF, 0xFF, 0x80);
     static final Color DEFAULT = Color.CYAN;
     static final Color KEYWORDS = new Color(133, 153, 0);
-    static final Color ANNOTATIONS = new Color(108, 113, 196);
-    static final Color SELECTION_BG = new Color(7, 56, 66);
-    public static final Color NAMES = new Color(88, 110, 117);
-
+    static final Color LABELS = new Color(108, 113, 196);
+    public static final Color COMPOUNDS = new Color(88, 110, 117);
     private final static Set KEY_WORDS = new HashSet<String>();
 
     static {
@@ -62,9 +58,9 @@ public class SyntaxPane extends JTextPane {
                 if (isKeyword(currentWord.toString())) {
                     appendToPane(currentWord.toString(), KEYWORDS);
                 } else if (isLabel(currentWord.toString())) {
-                    appendToPane(currentWord.toString(), ANNOTATIONS);
+                    appendToPane(currentWord.toString(), LABELS);
                 } else if (isCompound(currentWord.toString())) {
-                    appendToPane(currentWord.toString(), NAMES);
+                    appendToPane(currentWord.toString(), COMPOUNDS);
                 } else {
                     appendToPane(currentWord.toString(), DEFAULT);
                 }

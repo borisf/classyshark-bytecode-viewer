@@ -13,8 +13,8 @@ constructor() : JFrame() {
     internal var javaArea: JTextPane
     internal var asmArea: JTextPane
     internal var ASM: String = ""
-    val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
-    val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
+    internal val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
+    internal val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
 
     init {
 
@@ -46,17 +46,15 @@ constructor() : JFrame() {
         asmArea.font = Font("Menlo", Font.PLAIN, 18)
         asmArea.transferHandler = FileTransferHandler(this)
         asmArea.background = RESULT_AREAS_BACKGROUND
-        asmArea.foreground = SyntaxPane.NAMES
+        asmArea.foreground = SyntaxPane.COMPOUNDS
         asmArea.text = SharkBG.SHARKEY
         val asmScrollPane = JScrollPane(asmArea)
         resultPanel.add(asmScrollPane)
 
         mainPanel.add(resultPanel)
 
-        // TODO rename, as it works
         val asmSearch = IncrementalSearch(asmArea)
         val javaSearch = IncrementalSearch(javaArea)
-
         searchText.document.addDocumentListener(asmSearch)
         searchText.addActionListener(asmSearch)
         searchText.document.addDocumentListener(javaSearch)
