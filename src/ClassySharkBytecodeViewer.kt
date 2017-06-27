@@ -13,12 +13,12 @@ constructor() : JFrame() {
     internal var javaArea: JTextPane
     internal var asmArea: JTextPane
     internal var ASM: String = ""
+    internal val panelTitle = "ClassyShark Byte Code Viewer - "
     internal val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
     internal val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
 
     init {
-
-        title = "ClassyShark Byte Code Viewer - drag your .class file into the shark"
+        title = panelTitle + "drag your .class file into the shark"
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         preferredSize = Dimension(1230, 650)
 
@@ -69,6 +69,8 @@ constructor() : JFrame() {
         val inputStream: InputStream
         try {
 
+            title = panelTitle + file.name
+            
             // // Start capturing
             val buffer = ByteArrayOutputStream()
             System.setOut(PrintStream(buffer))
