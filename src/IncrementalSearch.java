@@ -11,7 +11,7 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 public class IncrementalSearch implements DocumentListener, ActionListener {
-    private static final Color HIGHLIGHTER_COLOR = new Color(88, 110, 117);
+    private static final Color HIGHLIGHTER_COLOR = new Color(71, 86, 89);
     protected JTextComponent content;
     protected Matcher matcher;
 

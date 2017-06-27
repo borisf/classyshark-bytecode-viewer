@@ -13,8 +13,8 @@ public class SyntaxPane extends JTextPane {
 
     static final Color DEFAULT = Color.CYAN;
     static final Color KEYWORDS = new Color(133, 153, 0);
-    static final Color LABELS = new Color(108, 113, 196);
-    public static final Color COMPOUNDS = new Color(88, 110, 117);
+    static final Color LABELS = new Color(200, 113, 196);
+    public static final Color COMPOUNDS = new Color(87, 129, 140);
     private final static Set KEY_WORDS = new HashSet<String>();
 
     static {
