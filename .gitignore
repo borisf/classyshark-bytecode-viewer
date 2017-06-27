@@ -10,3 +10,5 @@
 .idea/workspace.xml
 
 out/production/classyshark-bytecode-viewer/META-INF/MANIFEST.MF
+
+out/production/classyshark-bytecode-viewer/magnify.png

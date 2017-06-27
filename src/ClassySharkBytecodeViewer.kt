@@ -1,11 +1,13 @@
-
+import com.strobel.decompiler.DecompilerDriver
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.TraceClassVisitor
+import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
 import java.io.*
 import javax.swing.*
+
 
 class ClassySharkBytecodeViewer @Throws(Exception::class)
 constructor() : JFrame() {
@@ -25,11 +27,16 @@ constructor() : JFrame() {
         val mainPanel = JPanel()
         mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)
 
+        val myLabel = JLabel(createImageIcon("magnify.png", "Search"))
         val searchText = JTextField()
         searchText.font = Font("Menlo", Font.PLAIN, 18)
         searchText.background = INPUT_AREA_BACKGROUND
         searchText.foreground = Color.CYAN
-        mainPanel.add(searchText)
+
+        val panel = JPanel(BorderLayout())
+        panel.add(myLabel, BorderLayout.WEST)
+        panel.add(searchText, BorderLayout.CENTER)
+        mainPanel.add(panel)
 
         val resultPanel = JPanel()
         resultPanel.layout = BoxLayout(resultPanel, BoxLayout.X_AXIS)
@@ -66,41 +73,55 @@ constructor() : JFrame() {
     }
 
     fun onFileDragged(file: File) {
-        val inputStream: InputStream
         try {
-
             title = panelTitle + file.name
-            
-            // // Start capturing
-            val buffer = ByteArrayOutputStream()
-            System.setOut(PrintStream(buffer))
-
-            // Run what is supposed to output something
-            com.strobel.decompiler.DecompilerDriver.main(arrayOf(file.absolutePath))
-
-            // Stop capturing
-            System.setOut(PrintStream(FileOutputStream(FileDescriptor.out)))
-
-            // Use captured content
-            val content = buffer.toString()
-            buffer.reset()
-
-            javaArea.text = content
-            javaArea.caretPosition = 0
-
-            inputStream = FileInputStream(file)
-            val reader = ClassReader(inputStream)
-            val asmCode = StringWriter()
-            val visitor = TraceClassVisitor(PrintWriter(asmCode))
-            reader.accept(visitor, ClassReader.EXPAND_FRAMES)
-            asmArea.text = asmCode.toString()
-            ASM = asmCode.toString()
-            asmArea.caretPosition = 0
-
+            fillJavaArea(file)
+            fillAsmArea(file)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
+        }
+    }
+
+    private fun fillAsmArea(file: File) {
+        javaArea.caretPosition = 0
+        val inputStream = FileInputStream(file)
+        val reader = ClassReader(inputStream)
+        val asmCode = StringWriter()
+        val visitor = TraceClassVisitor(PrintWriter(asmCode))
+        reader.accept(visitor, ClassReader.EXPAND_FRAMES)
+        asmArea.text = asmCode.toString()
+        ASM = asmCode.toString()
+        asmArea.caretPosition = 0
+    }
+
+    private fun fillJavaArea(file: File) {
+        // // Start capturing
+        val buffer = ByteArrayOutputStream()
+        System.setOut(PrintStream(buffer))
+
+        // Run what is supposed to output something
+        DecompilerDriver.main(arrayOf(file.absolutePath))
+
+        // Stop capturing
+        System.setOut(PrintStream(FileOutputStream(FileDescriptor.out)))
+
+        // Use captured content
+        val content = buffer.toString()
+        buffer.reset()
+
+        javaArea.text = content
+    }
+
+    private fun createImageIcon(path: String,
+                                description: String): ImageIcon? {
+        val imgURL = javaClass.getResource(path)
+        if (imgURL != null) {
+            return ImageIcon(imgURL, description)
+        } else {
+            System.err.println("Couldn't find file: " + path)
+            return null
         }
     }
 

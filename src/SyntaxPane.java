@@ -1,5 +1,7 @@
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JTextPane;
@@ -41,9 +43,29 @@ public class SyntaxPane extends JTextPane {
         KEY_WORDS.add("FRAME FULL");
     }
 
+    public SyntaxPane() {
+        super();
+
+        // hack to block editing
+        addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                setEditable(true);
+
+            }
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                setEditable(false);
+
+            }
+        });
+    }
+
     @Override
     public void setText(String text) {
-        if(text.equals(SharkBG.SHARKEY)) {
+        if (text.equals(SharkBG.SHARKEY)) {
             super.setText(text);
             return;
         }
