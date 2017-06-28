@@ -53,7 +53,7 @@ constructor() : JFrame() {
         asmArea.font = Font("Menlo", Font.PLAIN, 18)
         asmArea.transferHandler = FileTransferHandler(this)
         asmArea.background = RESULT_AREAS_BACKGROUND
-        asmArea.foreground = SyntaxPane.COMPOUNDS
+        asmArea.foreground = Color.BLACK
         asmArea.text = SharkBG.SHARKEY
         val asmScrollPane = JScrollPane(asmArea)
         resultPanel.add(asmScrollPane)
