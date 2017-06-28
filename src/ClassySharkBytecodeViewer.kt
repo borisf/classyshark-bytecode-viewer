@@ -27,16 +27,16 @@ constructor() : JFrame() {
         val mainPanel = JPanel()
         mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)
 
-        val myLabel = JLabel(createImageIcon("magnify.png", "Search"))
+        val searchLabel = JLabel(createImageIcon("magnify.png", "Search"))
         val searchText = JTextField()
         searchText.font = Font("Menlo", Font.PLAIN, 18)
         searchText.background = INPUT_AREA_BACKGROUND
         searchText.foreground = Color.CYAN
 
-        val panel = JPanel(BorderLayout())
-        panel.add(myLabel, BorderLayout.WEST)
-        panel.add(searchText, BorderLayout.CENTER)
-        mainPanel.add(panel)
+        val toolbar = JPanel(BorderLayout())
+        toolbar.add(searchLabel, BorderLayout.WEST)
+        toolbar.add(searchText, BorderLayout.CENTER)
+        mainPanel.add(toolbar)
 
         val resultPanel = JPanel()
         resultPanel.layout = BoxLayout(resultPanel, BoxLayout.X_AXIS)
