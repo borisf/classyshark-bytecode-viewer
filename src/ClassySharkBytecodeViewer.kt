@@ -15,12 +15,13 @@ constructor() : JFrame() {
     internal var javaArea: JTextPane
     internal var asmArea: JTextPane
     internal var ASM: String = ""
-    internal val panelTitle = "ClassyShark Byte Code Viewer - "
+    internal val panelTitle = "ClassyShark Byte Code Viewer"
     internal val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
     internal val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
+    internal val DARK_BLUE = Color(72,61,139)
 
     init {
-        title = panelTitle + "drag your .class file into the shark"
+        title = panelTitle
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         preferredSize = Dimension(1230, 650)
 
@@ -42,10 +43,12 @@ constructor() : JFrame() {
         resultPanel.layout = BoxLayout(resultPanel, BoxLayout.X_AXIS)
         javaArea = SyntaxPane()
         javaArea.font = Font("Menlo", Font.PLAIN, 18)
-        javaArea.text = SharkBG.SHARKEY
+        javaArea.text =
+                "\n\n\n\n\n       Drag your class file over here     ....\n"
         javaArea.background = RESULT_AREAS_BACKGROUND
         javaArea.foreground = Color.CYAN
         javaArea.transferHandler = FileTransferHandler(this)
+        javaArea.preferredSize = Dimension(830, 250)
         val javaScrollPane = JScrollPane(javaArea)
         resultPanel.add(javaScrollPane)
 
@@ -53,7 +56,7 @@ constructor() : JFrame() {
         asmArea.font = Font("Menlo", Font.PLAIN, 18)
         asmArea.transferHandler = FileTransferHandler(this)
         asmArea.background = RESULT_AREAS_BACKGROUND
-        asmArea.foreground = Color.BLACK
+        asmArea.foreground = Color.CYAN
         asmArea.text = SharkBG.SHARKEY
         val asmScrollPane = JScrollPane(asmArea)
         resultPanel.add(asmScrollPane)
@@ -74,7 +77,7 @@ constructor() : JFrame() {
 
     fun onFileDragged(file: File) {
         try {
-            title = panelTitle + file.name
+            title = panelTitle + " - " + file.name
             fillJavaArea(file)
             fillAsmArea(file)
         } catch (e: FileNotFoundException) {
