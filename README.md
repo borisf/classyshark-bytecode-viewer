@@ -1,4 +1,4 @@
-# classyshark-bytecode-viewer
+# Classyshark Bytecode Viewer
 
 ![alt text](https://github.com/borisf/classyshark-bytecode-viewer/blob/master/img/CS%20Viewer.png)
 
@@ -20,6 +20,6 @@ Here is the tricky part, instead of doing source to source translation from Kotl
 better (faster and more accurate) to decompile Koltin generated class file into Java.
  
 To support the above the following 2 libraries are the best fit
-* Procyon (Apache 2) - open source Java decompiler. It is not the most famous, but pretty good and fast
-* ASM (Apache 2) - best Java bytecode reading library (used both by Kotlin and Android Studio)
-Current Stat
+* [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler)- an open source Java decompiler. It is not the most famous, but pretty good and fast
+* [ASM] (http://asm.ow2.org/) - the best Java bytecode reading library (used both by Kotlin and Android Studio)
+
