@@ -18,7 +18,11 @@ constructor() : JFrame() {
     internal val panelTitle = "ClassyShark Byte Code Viewer"
     internal val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
     internal val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
-    internal val DARK_BLUE = Color(72,61,139)
+
+    object IntroTextHolder {
+        @JvmStatic val INTRO_TEXT = "\n\n\n\n\n\n\n\n\n\n" +
+                "       Drag your class file over here     ....\n"
+    }
 
     init {
         title = panelTitle
@@ -43,8 +47,9 @@ constructor() : JFrame() {
         resultPanel.layout = BoxLayout(resultPanel, BoxLayout.X_AXIS)
         javaArea = SyntaxPane()
         javaArea.font = Font("Menlo", Font.PLAIN, 18)
+
         javaArea.text =
-                "\n\n\n\n\n       Drag your class file over here     ....\n"
+                IntroTextHolder.INTRO_TEXT
         javaArea.background = RESULT_AREAS_BACKGROUND
         javaArea.foreground = Color.CYAN
         javaArea.transferHandler = FileTransferHandler(this)
@@ -129,7 +134,6 @@ constructor() : JFrame() {
     }
 
     companion object {
-
         @JvmStatic fun main(args: Array<String>) {
             SwingUtilities.invokeLater {
                 try {
