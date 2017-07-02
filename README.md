@@ -1,5 +1,7 @@
 # classyshark-bytecode-viewer
 
+![alt text](https://github.com/borisf/classyshark-bytecode-viewer/blob/master/img/CS%20Viewer.png)
+
 ## Why
 Instantaneously assess performance impact of my Kotlin code on a class level
 ## How
