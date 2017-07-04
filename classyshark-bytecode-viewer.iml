@@ -10,5 +10,7 @@
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="asm-all-5.2" level="project" />
     <orderEntry type="library" name="procyon-decompiler-0.5.30" level="project" />
+    <orderEntry type="library" name="procyon-decompiler-0.5.30 (2)" level="project" />
+    <orderEntry type="library" name="asm-all-5.2 (2)" level="project" />
   </component>
 </module>
