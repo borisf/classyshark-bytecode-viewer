@@ -118,6 +118,8 @@ class SyntaxPane : JTextPane() {
             KEYWORDS.add("package")
             KEYWORDS.add("abstract")
             KEYWORDS.add("interface")
+            KEYWORDS.add("try")
+            KEYWORDS.add("catch")
 
             //<<<<<<<<<<<<<<<
             KEYWORDS.add("INNERCLASS")
