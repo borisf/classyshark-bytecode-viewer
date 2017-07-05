@@ -1,11 +1,16 @@
 <component name="libraryTable">
-  <library name="KotlinJavaRuntime">
+  <library name="lib">
     <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-jre7-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-jre7.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/kotlin-reflect.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/kotlin-test.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-jre7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-jre8-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-jre8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/procyon-decompiler-0.5.30.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/asm-all-5.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-stdlib-sources.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
