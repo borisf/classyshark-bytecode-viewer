@@ -22,6 +22,6 @@ Here is the tricky part, instead of doing source to source translation from Kotl
 better (faster and more accurate) to decompile Kotlin generated class file right into Java.
  
 To support the above the following 2 libraries are the best fit
-* [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler)- an open source Java decompiler. It is not the most famous, but pretty good and fast.
+* [Procyon](https://bitbucket.org/mstrobel/procyon/wiki/Java%20Decompiler)- an open source Java decompiler.
 * [ASM](http://asm.ow2.org/) - the best Java bytecode reading library (used both by Kotlin and Android Studio).
 
