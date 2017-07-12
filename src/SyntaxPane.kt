@@ -1,6 +1,10 @@
 import java.awt.Color
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.awt.event.FocusEvent
 import java.awt.event.FocusListener
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
 import java.util.*
 import javax.swing.JTextPane
 import javax.swing.text.SimpleAttributeSet
@@ -19,6 +23,36 @@ class SyntaxPane : JTextPane() {
 
             override fun focusGained(e: FocusEvent) {
                 isEditable = false
+
+            }
+        })
+
+        addKeyListener(object : KeyListener {
+            override fun keyTyped(e: KeyEvent) {
+
+            }
+
+            override fun keyPressed(e: KeyEvent) {
+                val toolkit = Toolkit.getDefaultToolkit()
+                val ctrlModifier = toolkit.menuShortcutKeyMask
+
+                //check if the modifier: ctrl for linux, windows or command for mac is pressed
+                // with the'c' key
+                if (e.keyChar == 'c' && e.modifiers and ctrlModifier == ctrlModifier) {
+
+                    var copyText: String? = selectedText
+
+                    //if there is no selection, copy the entire text
+                    if (copyText == null) {
+                        copyText = text
+                    }
+
+                    //Add the text to the clipboard
+                    toolkit.systemClipboard.setContents(StringSelection(copyText), null)
+                }
+            }
+
+            override fun keyReleased(e: KeyEvent) {
 
             }
         })
