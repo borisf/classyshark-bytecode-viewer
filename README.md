@@ -6,7 +6,7 @@
 Instantaneously assess performance impact of my Kotlin code on a [class](https://en.wikipedia.org/wiki/Java_class_file) level.
 
 ## How
-The most accurate and measurable way is to look at Kotlin generated executable (.class) files, the same files that that both JVM and Android DX tool see. 
+The most accurate and measurable way is to look at Kotlin generated executable (.class) files, the same files that both JVM and Android DX tool see. 
 
 ## What
 From every kotlin-compiler generated class file the user sees side by side comparison of:
