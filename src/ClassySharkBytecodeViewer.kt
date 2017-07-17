@@ -21,6 +21,7 @@ import java.awt.Dimension
 import java.awt.Font
 import java.io.*
 import javax.swing.*
+import javax.swing.filechooser.FileNameExtensionFilter
 
 class ClassySharkBytecodeViewer @Throws(Exception::class)
 constructor() : JFrame() {
@@ -45,15 +46,18 @@ constructor() : JFrame() {
         val mainPanel = JPanel()
         mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)
 
-        val searchLabel = JLabel(createImageIcon("magnify.png", "Search"))
+        val openButton = JButton(createImageIcon("ic_open.png", "Search"))
+        openButton.addActionListener { openButtonPressed() }
         val searchText = JTextField()
         searchText.font = Font("Menlo", Font.PLAIN, 18)
         searchText.background = INPUT_AREA_BACKGROUND
         searchText.foreground = Color.CYAN
+        val searchIcon = JLabel(createImageIcon("ic_magnify.png", "Search"))
 
         val toolbar = JPanel(BorderLayout())
-        toolbar.add(searchLabel, BorderLayout.WEST)
+        toolbar.add(openButton, BorderLayout.WEST)
         toolbar.add(searchText, BorderLayout.CENTER)
+        toolbar.add(searchIcon, BorderLayout.EAST)
         mainPanel.add(toolbar)
 
         val resultPanel = JPanel()
@@ -91,6 +95,20 @@ constructor() : JFrame() {
         contentPane = mainPanel
         pack()
         setLocationRelativeTo(null)
+    }
+
+    private fun openButtonPressed() {
+        val fc = JFileChooser("ClassyShark Bytecode Viewer")
+        fc.fileSelectionMode = JFileChooser.FILES_AND_DIRECTORIES
+
+        val filter = FileNameExtensionFilter("classes", "class")
+        fc.fileFilter = filter
+        fc.addChoosableFileFilter(filter)
+
+        val retValue = fc.showOpenDialog(JPanel())
+        if (retValue == JFileChooser.APPROVE_OPTION) {
+            onFileDragged(fc.selectedFile)
+        }
     }
 
     fun onFileDragged(file: File) {
