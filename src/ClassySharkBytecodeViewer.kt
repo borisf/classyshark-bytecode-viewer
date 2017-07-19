@@ -35,7 +35,9 @@ constructor() : JFrame() {
 
     object IntroTextHolder {
         @JvmStatic val INTRO_TEXT = "\n\n\n\n\n\n\n\n\n\n" +
-                "       Drag your class file over here     ....\n"
+                "       Drag your class file over here ....\n" +
+                "\n\n\n\n\n       ClassyShark ByteCode Viewer ver." +
+                Version.MAJOR + "." + Version.MINOR
     }
 
     init {
@@ -168,8 +170,15 @@ constructor() : JFrame() {
         @JvmStatic fun main(args: Array<String>) {
             SwingUtilities.invokeLater {
                 try {
-                    val csbv = ClassySharkBytecodeViewer()
-                    csbv.isVisible = true
+                    val bytecodeViewer = ClassySharkBytecodeViewer()
+
+                    if (args.size == 1) {
+                        bytecodeViewer.onFileDragged(File(args[0]))
+                    } else if (args.size > 1) {
+                        System.out.println("Usage: java -jar ClassySharkBytecodeViewer.jar <path to .class file>")
+                    }
+
+                    bytecodeViewer.isVisible = true
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

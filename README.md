@@ -2,6 +2,10 @@
 
 ![alt text](https://github.com/borisf/classyshark-bytecode-viewer/blob/master/img/CS%20Viewer.png)
 
+## Download & Run
+To run, grab the [latest JAR](https://github.com/borisf/classyshark-bytecode-viewer/releases)
+and run `java -jar ClassySharkBytecodeViewer.jar`. Optionally you can add a class file to open.
+
 ## Why
 Instantaneously assess performance impact of my Kotlin code on a [class](https://en.wikipedia.org/wiki/Java_class_file) level.
 
