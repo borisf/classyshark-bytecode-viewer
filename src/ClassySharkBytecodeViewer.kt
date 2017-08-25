@@ -28,8 +28,8 @@ import javax.swing.filechooser.FileNameExtensionFilter
 
 class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     
-    private var loadedFile: File = File("")
-    private var directoryWatcherThread: DirectoryWatcherThread = DirectoryWatcherThread("", "")
+    private var loadedFile: File
+    private var directoryWatcherThread: DirectoryWatcherThread
     private var javaArea: JTextPane
     private var asmArea: JTextPane
     private var ASM: String = ""
@@ -101,23 +101,22 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         contentPane = mainPanel
         pack()
         setLocationRelativeTo(null)
+
+        loadedFile = File("")
+        directoryWatcherThread = DirectoryWatcherThread("", "", Object())
     }
 
-    private fun openButtonPressed() {
-        val fc = JFileChooser("ClassyShark Bytecode Viewer")
-        fc.fileSelectionMode = JFileChooser.FILES_AND_DIRECTORIES
-
-        val filter = FileNameExtensionFilter("classes", "class")
-        fc.fileFilter = filter
-        fc.addChoosableFileFilter(filter)
-
-        val retValue = fc.showOpenDialog(JPanel())
-        if (retValue == JFileChooser.APPROVE_OPTION) {
-            onFileDragged(fc.selectedFile)
+    override fun propertyChange(evt: PropertyChangeEvent) {
+        if (evt.propertyName == "command") {
+            // Received new command (outside EDT)
+            SwingUtilities.invokeLater {
+                // Updating GUI inside EDT
+                onFileRecompiled()
+            }
         }
     }
 
-    fun onFileDragged(file: File) {
+    fun onFileLoaded(file: File) {
         try {
             this.loadedFile = file
             title = panelTitle + " - " + file.name
@@ -133,35 +132,26 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         }
     }
 
-    private fun watchLoadedFileChanges(file: File) {
+    private fun openButtonPressed() {
+        val fc = JFileChooser("ClassyShark Bytecode Viewer")
+        fc.fileSelectionMode = JFileChooser.FILES_AND_DIRECTORIES
 
-        // start watching for loaded file changes
-        directoryWatcherThread = DirectoryWatcherThread(file.parent, file.name)
+        val filter = FileNameExtensionFilter("classes", "class")
+        fc.fileFilter = filter
+        fc.addChoosableFileFilter(filter)
 
-        // todo move parameter to constructor
-        directoryWatcherThread.addPropertyListener(this)
-        Thread(directoryWatcherThread).start()
-
-        // TODO check if can move to class after thread started
-        directoryWatcherThread.addPropertyChangeListener(this)
-
-        // todo do analysis on threading
-    }
-
-    override fun propertyChange(evt: PropertyChangeEvent) {
-        if (evt.propertyName == "command") {
-            // Received new command (outside EDT)
-            SwingUtilities.invokeLater {
-                // Updating GUI inside EDT
-                onFileRecompiled()
-            }
+        val retValue = fc.showOpenDialog(JPanel())
+        if (retValue == JFileChooser.APPROVE_OPTION) {
+            onFileLoaded(fc.selectedFile)
         }
     }
-    
+
     private fun onFileRecompiled() {
         try {
             title = panelTitle + " - " + loadedFile.name
 
+            // TODO clean search for search text field
+            //searchText.
             fillJavaArea(loadedFile)
             fillAsmArea(loadedFile)
         } catch (e: FileNotFoundException) {
@@ -169,6 +159,19 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    private fun watchLoadedFileChanges(file: File) {
+
+        if(directoryWatcherThread.isAlive) {
+            directoryWatcherThread.interrupt()
+        }
+
+        directoryWatcherThread = DirectoryWatcherThread(file.parent, file.name, this)
+        directoryWatcherThread.start()
+
+        // TODO check if can move to class after thread started
+        directoryWatcherThread.addPropertyChangeListener(this)
     }
 
     private fun fillAsmArea(file: File) {
@@ -207,7 +210,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         return if (imgURL != null) {
             ImageIcon(imgURL, description)
         } else {
-            System.err.println("Couldn't find loadedFile: " + path)
+            System.err.println("Couldn't find file: " + path)
             null
         }
     }
@@ -219,9 +222,9 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
                     val bytecodeViewer = ClassySharkBytecodeViewer()
 
                     if (args.size == 1) {
-                        bytecodeViewer.onFileDragged(File(args[0]))
+                        bytecodeViewer.onFileLoaded(File(args[0]))
                     } else if (args.size > 1) {
-                        System.out.println("Usage: java -jar ClassySharkBytecodeViewer.jar <path to .class loadedFile>")
+                        System.out.println("Usage: java -jar ClassySharkBytecodeViewer.jar <path to .class file>")
                     }
 
                     bytecodeViewer.isVisible = true

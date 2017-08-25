@@ -32,7 +32,7 @@ class FileTransferHandler(private val classySharkBytecodeViewer: ClassySharkByte
                 return false
             }
 
-            data.map { it as File }.forEach { classySharkBytecodeViewer.onFileDragged(it) }
+            data.map { it as File }.forEach { classySharkBytecodeViewer.onFileLoaded(it) }
 
             return true
 

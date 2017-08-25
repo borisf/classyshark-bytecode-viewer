@@ -28,32 +28,24 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 // todo make package com.borisfarber.csviewer
-// TODO make this class extend Thread
-public class DirectoryWatcherThread implements Runnable {
+public class DirectoryWatcherThread extends Thread {
 
-    // TODO make atomic
-    private final String directoryName;
     private final WatchService watcher;
-    private final String fileName;
     private PropertyChangeSupport pcs;
 
     private String command;
 
-    public DirectoryWatcherThread(String directoryName, String fileName) throws Exception {
-        this.directoryName = directoryName;
-        this.fileName = fileName;
+    public DirectoryWatcherThread(String directoryName, String fileName, Object listener) throws Exception {
+
+        // TODO handle file name
 
         watcher = FileSystems.getDefault().newWatchService();
         Path dir = Paths.get(directoryName);
-
-        // todo see if I can take this out, may be to put into sync method
         dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
         System.out.println("Watch Service registered for dir: " + dir.getFileName());
-    }
 
-    public void addPropertyListener(Object o) {
-        this.pcs = new PropertyChangeSupport(o);
+        this.pcs = new PropertyChangeSupport(listener);
     }
 
     @Override
@@ -90,10 +82,6 @@ public class DirectoryWatcherThread implements Runnable {
         }
     }
 
-    public String getCommand() {
-        return command;
-    }
-
     private void setCommand(String command) {
         String old = this.command;
         this.command = command;
@@ -107,8 +95,7 @@ public class DirectoryWatcherThread implements Runnable {
     public static void main(String[] args) throws Exception {
         String directoryName = "/Users/";
 
-        DirectoryWatcherThread dwd = new DirectoryWatcherThread(directoryName, "User.class");
-        dwd.addPropertyListener(new Object());
+        DirectoryWatcherThread dwd = new DirectoryWatcherThread(directoryName, "User.class", new Object());
         dwd.run();
     }
 }
