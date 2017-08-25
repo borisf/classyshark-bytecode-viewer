@@ -13,33 +13,37 @@
  */
 
 import com.strobel.decompiler.DecompilerDriver
+import filewatch.DirectoryWatcherThread
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.TraceClassVisitor
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
+import java.beans.PropertyChangeEvent
+import java.beans.PropertyChangeListener
 import java.io.*
 import javax.swing.*
 import javax.swing.filechooser.FileNameExtensionFilter
 
-class ClassySharkBytecodeViewer @Throws(Exception::class)
-constructor() : JFrame() {
-
-    internal var javaArea: JTextPane
-    internal var asmArea: JTextPane
-    internal var ASM: String = ""
-    internal val panelTitle = "ClassyShark Byte Code Viewer"
-    internal val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
-    internal val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
+class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
+    
+    private var loadedFile: File = File("")
+    private var directoryWatcherThread: DirectoryWatcherThread = DirectoryWatcherThread("", "")
+    private var javaArea: JTextPane
+    private var asmArea: JTextPane
+    private var ASM: String = ""
+    private val panelTitle = "ClassyShark Byte Code Viewer"
+    private val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
+    private val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
 
     object IntroTextHolder {
         @JvmStatic val INTRO_TEXT = "\n\n\n\n\n\n\n\n\n\n" +
-                "       Drag your class file over here ....\n" +
+                "       Drag your class loadedFile over here ....\n" +
                 "\n\n\n\n\n       ClassyShark ByteCode Viewer ver." +
                 Version.MAJOR + "." + Version.MINOR
     }
-
+    
     init {
         title = panelTitle
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -115,9 +119,51 @@ constructor() : JFrame() {
 
     fun onFileDragged(file: File) {
         try {
+            this.loadedFile = file
             title = panelTitle + " - " + file.name
+
             fillJavaArea(file)
             fillAsmArea(file)
+
+            watchLoadedFileChanges(file)
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun watchLoadedFileChanges(file: File) {
+
+        // start watching for loaded file changes
+        directoryWatcherThread = DirectoryWatcherThread(file.parent, file.name)
+
+        // todo move parameter to constructor
+        directoryWatcherThread.addPropertyListener(this)
+        Thread(directoryWatcherThread).start()
+
+        // TODO check if can move to class after thread started
+        directoryWatcherThread.addPropertyChangeListener(this)
+
+        // todo do analysis on threading
+    }
+
+    override fun propertyChange(evt: PropertyChangeEvent) {
+        if (evt.propertyName == "command") {
+            // Received new command (outside EDT)
+            SwingUtilities.invokeLater {
+                // Updating GUI inside EDT
+                onFileRecompiled()
+            }
+        }
+    }
+    
+    private fun onFileRecompiled() {
+        try {
+            title = panelTitle + " - " + loadedFile.name
+
+            fillJavaArea(loadedFile)
+            fillAsmArea(loadedFile)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -158,11 +204,11 @@ constructor() : JFrame() {
     private fun createImageIcon(path: String,
                                 description: String): ImageIcon? {
         val imgURL = javaClass.getResource(path)
-        if (imgURL != null) {
-            return ImageIcon(imgURL, description)
+        return if (imgURL != null) {
+            ImageIcon(imgURL, description)
         } else {
-            System.err.println("Couldn't find file: " + path)
-            return null
+            System.err.println("Couldn't find loadedFile: " + path)
+            null
         }
     }
 
@@ -175,7 +221,7 @@ constructor() : JFrame() {
                     if (args.size == 1) {
                         bytecodeViewer.onFileDragged(File(args[0]))
                     } else if (args.size > 1) {
-                        System.out.println("Usage: java -jar ClassySharkBytecodeViewer.jar <path to .class file>")
+                        System.out.println("Usage: java -jar ClassySharkBytecodeViewer.jar <path to .class loadedFile>")
                     }
 
                     bytecodeViewer.isVisible = true
