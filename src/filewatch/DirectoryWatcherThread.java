@@ -14,6 +14,7 @@
 
 package filewatch;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.nio.file.FileSystems;
@@ -31,14 +32,13 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 public class DirectoryWatcherThread extends Thread {
 
     private final WatchService watcher;
+    private final String fileName;
     private PropertyChangeSupport pcs;
 
     private String command;
 
-    public DirectoryWatcherThread(String directoryName, String fileName, Object listener) throws Exception {
-
-        // TODO handle file name
-
+    public DirectoryWatcherThread(String directoryName, String fileName, PropertyChangeListener listener) throws Exception {
+        this.fileName = fileName;
         watcher = FileSystems.getDefault().newWatchService();
         Path dir = Paths.get(directoryName);
         dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
@@ -68,11 +68,9 @@ public class DirectoryWatcherThread extends Thread {
                 String commandText = kind.name() + ": " + fileName;
                 System.out.println(commandText);
 
-                // TODO bug with file names src file is not mapped
-                // TODO to the class file
-                //if(fileName.equals(this.fileName)) {
+                if(fileName.endsWith(this.fileName)) {
                     setCommand(commandText);
-                //}
+                }
             }
 
             boolean valid = key.reset();
@@ -95,7 +93,12 @@ public class DirectoryWatcherThread extends Thread {
     public static void main(String[] args) throws Exception {
         String directoryName = "/Users/";
 
-        DirectoryWatcherThread dwd = new DirectoryWatcherThread(directoryName, "User.class", new Object());
+        DirectoryWatcherThread dwd = new DirectoryWatcherThread(directoryName, "User.class", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+
+            }
+        });
         dwd.run();
     }
 }

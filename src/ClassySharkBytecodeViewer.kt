@@ -30,6 +30,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     
     private var loadedFile: File
     private var directoryWatcherThread: DirectoryWatcherThread
+    private val searchText: JTextField
     private var javaArea: JTextPane
     private var asmArea: JTextPane
     private var ASM: String = ""
@@ -39,7 +40,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
 
     object IntroTextHolder {
         @JvmStatic val INTRO_TEXT = "\n\n\n\n\n\n\n\n\n\n" +
-                "       Drag your class loadedFile over here ....\n" +
+                "       Drag your class file over here ....\n" +
                 "\n\n\n\n\n       ClassyShark ByteCode Viewer ver." +
                 Version.MAJOR + "." + Version.MINOR
     }
@@ -54,7 +55,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
 
         val openButton = JButton(createImageIcon("ic_open.png", "Search"))
         openButton.addActionListener { openButtonPressed() }
-        val searchText = JTextField()
+        searchText = JTextField()
         searchText.font = Font("Menlo", Font.PLAIN, 18)
         searchText.background = INPUT_AREA_BACKGROUND
         searchText.foreground = Color.CYAN
@@ -103,7 +104,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         setLocationRelativeTo(null)
 
         loadedFile = File("")
-        directoryWatcherThread = DirectoryWatcherThread("", "", Object())
+        directoryWatcherThread = DirectoryWatcherThread("", "", this)
     }
 
     override fun propertyChange(evt: PropertyChangeEvent) {
@@ -149,9 +150,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     private fun onFileRecompiled() {
         try {
             title = panelTitle + " - " + loadedFile.name
-
-            // TODO clean search for search text field
-            //searchText.
+            searchText.text = ""
             fillJavaArea(loadedFile)
             fillAsmArea(loadedFile)
         } catch (e: FileNotFoundException) {
@@ -170,7 +169,8 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         directoryWatcherThread = DirectoryWatcherThread(file.parent, file.name, this)
         directoryWatcherThread.start()
 
-        // TODO check if can move to class after thread started
+        // the line below must be there otherwise threading + file system events
+        // don't work possibly after the thread had started
         directoryWatcherThread.addPropertyChangeListener(this)
     }
 
