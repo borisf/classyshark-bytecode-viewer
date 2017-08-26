@@ -13,7 +13,6 @@
  */
 
 import com.strobel.decompiler.DecompilerDriver
-import filewatch.DirectoryWatcherThread
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.TraceClassVisitor
 import java.awt.BorderLayout
@@ -29,7 +28,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     
     private var loadedFile: File
-    private var directoryWatcherThread: DirectoryWatcherThread
+    private var loadedFileWatcherThread: FileWatcherThread
     private val searchText: JTextField
     private var javaArea: JTextPane
     private var asmArea: JTextPane
@@ -104,7 +103,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         setLocationRelativeTo(null)
 
         loadedFile = File("")
-        directoryWatcherThread = DirectoryWatcherThread("", "", this)
+        loadedFileWatcherThread = FileWatcherThread("", "", this)
     }
 
     override fun propertyChange(evt: PropertyChangeEvent) {
@@ -162,16 +161,16 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
 
     private fun watchLoadedFileChanges(file: File) {
 
-        if(directoryWatcherThread.isAlive) {
-            directoryWatcherThread.interrupt()
+        if(loadedFileWatcherThread.isAlive) {
+            loadedFileWatcherThread.interrupt()
         }
 
-        directoryWatcherThread = DirectoryWatcherThread(file.parent, file.name, this)
-        directoryWatcherThread.start()
+        loadedFileWatcherThread = FileWatcherThread(file.parent, file.name, this)
+        loadedFileWatcherThread.start()
 
         // the line below must be there otherwise threading + file system events
         // don't work possibly after the thread had started
-        directoryWatcherThread.addPropertyChangeListener(this)
+        loadedFileWatcherThread.addPropertyChangeListener(this)
     }
 
     private fun fillAsmArea(file: File) {

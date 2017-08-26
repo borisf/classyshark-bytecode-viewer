@@ -12,9 +12,6 @@
  * permissions and limitations under the License.
  */
 
-package filewatch;
-
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.nio.file.FileSystems;
@@ -29,7 +26,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 // todo make package com.borisfarber.csviewer
-public class DirectoryWatcherThread extends Thread {
+public class FileWatcherThread extends Thread {
 
     private final WatchService watcher;
     private final String fileName;
@@ -37,7 +34,8 @@ public class DirectoryWatcherThread extends Thread {
 
     private String command;
 
-    public DirectoryWatcherThread(String directoryName, String fileName, PropertyChangeListener listener) throws Exception {
+    public FileWatcherThread(String directoryName, String fileName,
+                             PropertyChangeListener listener) throws Exception {
         this.fileName = fileName;
         watcher = FileSystems.getDefault().newWatchService();
         Path dir = Paths.get(directoryName);
@@ -93,12 +91,7 @@ public class DirectoryWatcherThread extends Thread {
     public static void main(String[] args) throws Exception {
         String directoryName = "/Users/";
 
-        DirectoryWatcherThread dwd = new DirectoryWatcherThread(directoryName, "User.class", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-
-            }
-        });
+        FileWatcherThread dwd = new FileWatcherThread(directoryName, "User.class", evt -> {});
         dwd.run();
     }
 }
