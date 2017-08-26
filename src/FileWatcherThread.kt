@@ -30,9 +30,7 @@ constructor(directoryName: String, private val fileName: String,
     init {
         val dir = Paths.get(directoryName)
         dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
-
         println("Watch Service registered for dir: " + dir.fileName)
-
         this.pcs = PropertyChangeSupport(listener)
     }
 
@@ -77,7 +75,6 @@ constructor(directoryName: String, private val fileName: String,
     }
 
     companion object {
-
         @Throws(Exception::class)
         @JvmStatic
         fun main(args: Array<String>) {
