@@ -26,8 +26,6 @@ import java.util.prefs.Preferences
 import javax.swing.*
 import javax.swing.filechooser.FileNameExtensionFilter
 
-
-
 class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     
     private var loadedFile: File
@@ -83,7 +81,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         javaArea.preferredSize = Dimension(830, 250)
         val javaScrollPane = JScrollPane(javaArea)
 
-        tabbedPane.addTab("Java code", null, javaScrollPane,
+        tabbedPane.addTab("Java", null, javaScrollPane,
                 "Java sources")
 
         asmArea = SyntaxPane()
@@ -93,8 +91,8 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         asmArea.foreground = Color.CYAN
         asmArea.text = SharkBG.SHARKEY
         val asmScrollPane = JScrollPane(asmArea)
-        tabbedPane.addTab("Java bytecode", null, asmScrollPane,
-                "Java bytecode")
+        tabbedPane.addTab("Bytecode", null, asmScrollPane,
+                "Java Bytecode")
         resultPanel.add(tabbedPane)
         mainPanel.add(resultPanel)
 
