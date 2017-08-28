@@ -22,8 +22,11 @@ import java.awt.Font
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 import java.io.*
+import java.util.prefs.Preferences
 import javax.swing.*
 import javax.swing.filechooser.FileNameExtensionFilter
+
+
 
 class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     
@@ -51,6 +54,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
 
         val mainPanel = JPanel()
         mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)
+        val tabbedPane = JTabbedPane()
 
         val openButton = JButton(createImageIcon("ic_open.png", "Search"))
         openButton.addActionListener { openButtonPressed() }
@@ -78,7 +82,9 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         javaArea.transferHandler = FileTransferHandler(this)
         javaArea.preferredSize = Dimension(830, 250)
         val javaScrollPane = JScrollPane(javaArea)
-        resultPanel.add(javaScrollPane)
+
+        tabbedPane.addTab("Java code", null, javaScrollPane,
+                "Java sources")
 
         asmArea = SyntaxPane()
         asmArea.font = Font("Menlo", Font.PLAIN, 18)
@@ -87,8 +93,9 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         asmArea.foreground = Color.CYAN
         asmArea.text = SharkBG.SHARKEY
         val asmScrollPane = JScrollPane(asmArea)
-        resultPanel.add(asmScrollPane)
-
+        tabbedPane.addTab("Java bytecode", null, asmScrollPane,
+                "Java bytecode")
+        resultPanel.add(tabbedPane)
         mainPanel.add(resultPanel)
 
         val asmSearch = IncrementalSearch(asmArea)
@@ -132,8 +139,14 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         }
     }
 
+    private val LAST_USED_FOLDER: String = "ClassySharkBytecodeViewer"
+
     private fun openButtonPressed() {
-        val fc = JFileChooser("ClassyShark Bytecode Viewer")
+
+        val prefs = Preferences.userRoot().node("ClassySharkBytecodeViewer")
+
+        val fc = JFileChooser(prefs.get(LAST_USED_FOLDER,
+                 File(".").absolutePath))
         fc.fileSelectionMode = JFileChooser.FILES_AND_DIRECTORIES
 
         val filter = FileNameExtensionFilter("classes", "class")
@@ -143,6 +156,8 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         val retValue = fc.showOpenDialog(JPanel())
         if (retValue == JFileChooser.APPROVE_OPTION) {
             onFileLoaded(fc.selectedFile)
+
+            prefs.put(LAST_USED_FOLDER, fc.selectedFile.parent)
         }
     }
 
