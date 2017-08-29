@@ -13,7 +13,7 @@ Instantaneously assess performance impact of your Kotlin code on a [class](https
 The most accurate and measurable way is to look at Kotlin generated executable (.class) files, the same files that both JVM and Android DX tool see. 
 
 ## What
-From every kotlin-compiler generated class file you will see side by side comparison of:
+From every kotlin-compiler generated class file you will see 2 tabs:
 
 1. Equivalent Java code
 2. Raw class file internals
