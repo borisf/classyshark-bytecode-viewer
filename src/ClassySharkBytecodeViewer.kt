@@ -19,19 +19,24 @@ import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Font
+import java.beans.PropertyChangeEvent
+import java.beans.PropertyChangeListener
 import java.io.*
+import java.util.prefs.Preferences
 import javax.swing.*
 import javax.swing.filechooser.FileNameExtensionFilter
 
-class ClassySharkBytecodeViewer @Throws(Exception::class)
-constructor() : JFrame() {
-
-    internal var javaArea: JTextPane
-    internal var asmArea: JTextPane
-    internal var ASM: String = ""
-    internal val panelTitle = "ClassyShark Byte Code Viewer"
-    internal val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
-    internal val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
+class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
+    
+    private var loadedFile: File
+    private var loadedFileWatcherThread: FileWatcherThread
+    private val searchText: JTextField
+    private var javaArea: JTextPane
+    private var asmArea: JTextPane
+    private var ASM: String = ""
+    private val panelTitle = "ClassyShark Byte Code Viewer"
+    private val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
+    private val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
 
     object IntroTextHolder {
         @JvmStatic val INTRO_TEXT = "\n\n\n\n\n\n\n\n\n\n" +
@@ -39,7 +44,7 @@ constructor() : JFrame() {
                 "\n\n\n\n\n       ClassyShark ByteCode Viewer ver." +
                 Version.MAJOR + "." + Version.MINOR
     }
-
+    
     init {
         title = panelTitle
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -47,10 +52,11 @@ constructor() : JFrame() {
 
         val mainPanel = JPanel()
         mainPanel.layout = BoxLayout(mainPanel, BoxLayout.Y_AXIS)
+        val tabbedPane = JTabbedPane()
 
         val openButton = JButton(createImageIcon("ic_open.png", "Search"))
         openButton.addActionListener { openButtonPressed() }
-        val searchText = JTextField()
+        searchText = JTextField()
         searchText.font = Font("Menlo", Font.PLAIN, 18)
         searchText.background = INPUT_AREA_BACKGROUND
         searchText.foreground = Color.CYAN
@@ -74,7 +80,9 @@ constructor() : JFrame() {
         javaArea.transferHandler = FileTransferHandler(this)
         javaArea.preferredSize = Dimension(830, 250)
         val javaScrollPane = JScrollPane(javaArea)
-        resultPanel.add(javaScrollPane)
+
+        tabbedPane.addTab("Java", null, javaScrollPane,
+                "Java sources")
 
         asmArea = SyntaxPane()
         asmArea.font = Font("Menlo", Font.PLAIN, 18)
@@ -83,8 +91,9 @@ constructor() : JFrame() {
         asmArea.foreground = Color.CYAN
         asmArea.text = SharkBG.SHARKEY
         val asmScrollPane = JScrollPane(asmArea)
-        resultPanel.add(asmScrollPane)
-
+        tabbedPane.addTab("Bytecode", null, asmScrollPane,
+                "Java Bytecode")
+        resultPanel.add(tabbedPane)
         mainPanel.add(resultPanel)
 
         val asmSearch = IncrementalSearch(asmArea)
@@ -97,10 +106,45 @@ constructor() : JFrame() {
         contentPane = mainPanel
         pack()
         setLocationRelativeTo(null)
+
+        loadedFile = File("")
+        loadedFileWatcherThread = FileWatcherThread("", "", this)
     }
 
+    override fun propertyChange(evt: PropertyChangeEvent) {
+        if (evt.propertyName == "command") {
+            // Received new command (outside EDT)
+            SwingUtilities.invokeLater {
+                // Updating GUI inside EDT
+                onFileRecompiled()
+            }
+        }
+    }
+
+    fun onFileLoaded(file: File) {
+        try {
+            this.loadedFile = file
+            title = panelTitle + " - " + file.name
+
+            fillJavaArea(file)
+            fillAsmArea(file)
+
+            watchLoadedFileChanges(file)
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private val LAST_USED_FOLDER: String = "ClassySharkBytecodeViewer"
+
     private fun openButtonPressed() {
-        val fc = JFileChooser("ClassyShark Bytecode Viewer")
+
+        val prefs = Preferences.userRoot().node("ClassySharkBytecodeViewer")
+
+        val fc = JFileChooser(prefs.get(LAST_USED_FOLDER,
+                 File(".").absolutePath))
         fc.fileSelectionMode = JFileChooser.FILES_AND_DIRECTORIES
 
         val filter = FileNameExtensionFilter("classes", "class")
@@ -109,20 +153,37 @@ constructor() : JFrame() {
 
         val retValue = fc.showOpenDialog(JPanel())
         if (retValue == JFileChooser.APPROVE_OPTION) {
-            onFileDragged(fc.selectedFile)
+            onFileLoaded(fc.selectedFile)
+
+            prefs.put(LAST_USED_FOLDER, fc.selectedFile.parent)
         }
     }
 
-    fun onFileDragged(file: File) {
+    private fun onFileRecompiled() {
         try {
-            title = panelTitle + " - " + file.name
-            fillJavaArea(file)
-            fillAsmArea(file)
+            title = panelTitle + " - " + loadedFile.name
+            searchText.text = ""
+            fillJavaArea(loadedFile)
+            fillAsmArea(loadedFile)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    private fun watchLoadedFileChanges(file: File) {
+
+        if(loadedFileWatcherThread.isAlive) {
+            loadedFileWatcherThread.interrupt()
+        }
+
+        loadedFileWatcherThread = FileWatcherThread(file.parent, file.name, this)
+        loadedFileWatcherThread.start()
+
+        // the line below must be there otherwise threading + file system events
+        // don't work possibly after the thread had started
+        loadedFileWatcherThread.addPropertyChangeListener(this)
     }
 
     private fun fillAsmArea(file: File) {
@@ -158,11 +219,11 @@ constructor() : JFrame() {
     private fun createImageIcon(path: String,
                                 description: String): ImageIcon? {
         val imgURL = javaClass.getResource(path)
-        if (imgURL != null) {
-            return ImageIcon(imgURL, description)
+        return if (imgURL != null) {
+            ImageIcon(imgURL, description)
         } else {
             System.err.println("Couldn't find file: " + path)
-            return null
+            null
         }
     }
 
@@ -173,7 +234,7 @@ constructor() : JFrame() {
                     val bytecodeViewer = ClassySharkBytecodeViewer()
 
                     if (args.size == 1) {
-                        bytecodeViewer.onFileDragged(File(args[0]))
+                        bytecodeViewer.onFileLoaded(File(args[0]))
                     } else if (args.size > 1) {
                         System.out.println("Usage: java -jar ClassySharkBytecodeViewer.jar <path to .class file>")
                     }
