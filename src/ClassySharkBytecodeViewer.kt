@@ -33,6 +33,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     private val searchText: JTextField
     private var javaArea: JTextPane
     private var asmArea: JTextPane
+    private var hexArea: HexPanel
     private var ASM: String = ""
     private val panelTitle = "ClassyShark Byte Code Viewer"
     private val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
@@ -93,6 +94,10 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         val asmScrollPane = JScrollPane(asmArea)
         tabbedPane.addTab("Bytecode", null, asmScrollPane,
                 "Java Bytecode")
+
+        hexArea = HexPanel(File(""))
+        tabbedPane.addTab("Hex", null, hexArea,"Hex")
+
         resultPanel.add(tabbedPane)
         mainPanel.add(resultPanel)
 
@@ -128,6 +133,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
 
             fillJavaArea(file)
             fillAsmArea(file)
+            hexArea.fillFromFile(file)
 
             watchLoadedFileChanges(file)
         } catch (e: FileNotFoundException) {
@@ -165,6 +171,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
             searchText.text = ""
             fillJavaArea(loadedFile)
             fillAsmArea(loadedFile)
+            hexArea.fillFromFile(loadedFile)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
