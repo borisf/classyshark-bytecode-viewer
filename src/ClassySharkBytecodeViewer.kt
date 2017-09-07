@@ -12,7 +12,6 @@
  * permissions and limitations under the License.
  */
 
-import com.strobel.decompiler.DecompilerDriver
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.TraceClassVisitor
 import java.awt.BorderLayout
@@ -33,6 +32,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     private val searchText: JTextField
     private var javaArea: JTextPane
     private var asmArea: JTextPane
+    private var hexArea: HexPanel
     private var ASM: String = ""
     private val panelTitle = "ClassyShark Byte Code Viewer"
     private val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
@@ -93,6 +93,10 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         val asmScrollPane = JScrollPane(asmArea)
         tabbedPane.addTab("Bytecode", null, asmScrollPane,
                 "Java Bytecode")
+
+        hexArea = HexPanel(File(""))
+        tabbedPane.addTab("Hex", null, hexArea,"Hex")
+
         resultPanel.add(tabbedPane)
         mainPanel.add(resultPanel)
 
@@ -128,6 +132,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
 
             fillJavaArea(file)
             fillAsmArea(file)
+            hexArea.fillFromFile(file)
 
             watchLoadedFileChanges(file)
         } catch (e: FileNotFoundException) {
@@ -165,6 +170,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
             searchText.text = ""
             fillJavaArea(loadedFile)
             fillAsmArea(loadedFile)
+            hexArea.fillFromFile(loadedFile)
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -199,20 +205,19 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     }
 
     private fun fillJavaArea(file: File) {
-        // // Start capturing
-        val buffer = ByteArrayOutputStream()
-        System.setOut(PrintStream(buffer))
 
-        // Run what is supposed to output something
-        DecompilerDriver.main(arrayOf(file.absolutePath))
+        val writer = StringWriter()
 
-        // Stop capturing
-        System.setOut(PrintStream(FileOutputStream(FileDescriptor.out)))
+        try {
+            com.strobel.decompiler.Decompiler.decompile(
+                    file.absolutePath,
+                    com.strobel.decompiler.PlainTextOutput(writer)
+            )
+        } finally {
+            writer.flush()
+        }
 
-        // Use captured content
-        val content = buffer.toString()
-        buffer.reset()
-
+        val content = writer.toString()
         javaArea.text = content
     }
 
