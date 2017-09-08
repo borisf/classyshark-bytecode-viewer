@@ -37,6 +37,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     private val panelTitle = "ClassyShark Byte Code Viewer"
     private val RESULT_AREAS_BACKGROUND = Color(46, 48, 50)
     private val INPUT_AREA_BACKGROUND = Color(88, 110, 117)
+    private val LAST_USED_FOLDER: String = "ClassySharkBytecodeViewer"
 
     object IntroTextHolder {
         @JvmStatic val INTRO_TEXT = "\n\n\n\n\n\n\n\n\n\n" +
@@ -142,11 +143,9 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         }
     }
 
-    private val LAST_USED_FOLDER: String = "ClassySharkBytecodeViewer"
-
     private fun openButtonPressed() {
 
-        val prefs = Preferences.userRoot().node("ClassySharkBytecodeViewer")
+        val prefs = Preferences.userRoot().node(LAST_USED_FOLDER)
 
         val fc = JFileChooser(prefs.get(LAST_USED_FOLDER,
                  File(".").absolutePath))
@@ -159,7 +158,6 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         val retValue = fc.showOpenDialog(JPanel())
         if (retValue == JFileChooser.APPROVE_OPTION) {
             onFileLoaded(fc.selectedFile)
-
             prefs.put(LAST_USED_FOLDER, fc.selectedFile.parent)
         }
     }

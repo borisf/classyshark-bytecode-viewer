@@ -40,7 +40,5 @@ object ByteUtils {
 
     private fun visibleAsciiRange() = 32..126
 
-    private fun byte2hex(b: Byte): String {
-        return String.format("%02X ", b)
-    }
+    private fun byte2hex(b: Byte): String = String.format("%02X ", b)
 }
