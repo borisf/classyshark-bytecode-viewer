@@ -5,6 +5,7 @@ group 'classyshark-bytecode-viewer'
 version '7.0'
 sourceCompatibility = 1.8
 sourceSets.main.kotlin.srcDirs = ['src/']
+sourceSets.main.resources.srcDirs = ['src/']
 
 repositories {
     flatDir {
