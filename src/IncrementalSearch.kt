@@ -64,7 +64,7 @@ class IncrementalSearch(private var content: JTextComponent) : DocumentListener,
             while (matcher!!.find()) {
                 val group = matcher!!.group()
 
-                if (group.length > 2) {
+                if (group.length > 1) {
                     content.caret.dot = matcher!!.start()
                     content.caret.moveDot(matcher!!.end())
 

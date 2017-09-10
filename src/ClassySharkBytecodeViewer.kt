@@ -103,10 +103,17 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
 
         val asmSearch = IncrementalSearch(asmArea)
         val javaSearch = IncrementalSearch(javaArea)
+        val asciiSearch = IncrementalSearch(hexArea.asciiView)
+        val hexSearch = IncrementalSearch(hexArea.hexView)
+
         searchText.document.addDocumentListener(asmSearch)
         searchText.addActionListener(asmSearch)
         searchText.document.addDocumentListener(javaSearch)
         searchText.addActionListener(javaSearch)
+        searchText.document.addDocumentListener(asciiSearch)
+        searchText.addActionListener(asciiSearch)
+        searchText.document.addDocumentListener(hexSearch)
+        searchText.addActionListener(hexSearch)
 
         contentPane = mainPanel
         pack()

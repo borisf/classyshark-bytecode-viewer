@@ -28,8 +28,8 @@ class HexPanel @JvmOverloads
 constructor(bytes: ByteBuffer, private val bytesPerLine: Int = DEFAULT_BYTES_PER_LINE) :
         JPanel(BorderLayout()), CaretListener {
     private val offsetView: JTextComponent
-    private val hexView: JTextComponent
-    private val asciiView: JTextComponent
+    val hexView: JTextComponent
+    val asciiView: JTextComponent
     private val statusLabel: JLabel
     private val highlightColor: Color
     private val highlighterPainter: DefaultHighlighter.DefaultHighlightPainter
@@ -99,61 +99,63 @@ constructor(bytes: ByteBuffer, private val bytesPerLine: Int = DEFAULT_BYTES_PER
             this.clearHighlight()
         }
 
-        if (e.source === this.asciiView) {
-            var startByte = e.mark
-            var endByte = e.dot
+        when {
+            e.source === this.asciiView -> {
+                var startByte = e.mark
+                var endByte = e.dot
 
-            if (startByte > endByte) {
-                val t = endByte
-                endByte = startByte
-                startByte = t
+                if (startByte > endByte) {
+                    val t = endByte
+                    endByte = startByte
+                    startByte = t
+                }
+
+                // the number of line endings before the start,end points
+                val startRows = (startByte - startByte % this.bytesPerLine) / this.bytesPerLine
+                val endRows = (endByte - endByte % this.bytesPerLine) / this.bytesPerLine
+
+                // the byte index of the start,end points in the ASCII view
+                startByte -= startRows
+                endByte -= endRows
+
+                // avoid the loop
+                if (asciiLastSelectionStart == startByte && asciiLastSelectionEnd == endByte) {
+                    return
+                }
+                asciiLastSelectionStart = startByte
+                asciiLastSelectionEnd = endByte
+
+                this.setSelection(startByte, endByte)
             }
+            e.source === this.hexView -> {
+                var startByte = e.mark
+                var endByte = e.dot
 
-            // the number of line endings before the start,end points
-            val startRows = (startByte - startByte % this.bytesPerLine) / this.bytesPerLine
-            val endRows = (endByte - endByte % this.bytesPerLine) / this.bytesPerLine
+                if (startByte > endByte) {
+                    val t = endByte
+                    endByte = startByte
+                    startByte = t
+                }
 
-            // the byte index of the start,end points in the ASCII view
-            startByte -= startRows
-            endByte -= endRows
+                // the number of line endings before the start,end points
+                val startRows = (startByte - startByte % bytesPerLine) / (3 * bytesPerLine)
+                val endRows = (endByte - endByte % bytesPerLine) / (3 * bytesPerLine)
 
-            // avoid the loop
-            if (asciiLastSelectionStart == startByte && asciiLastSelectionEnd == endByte) {
-                return
+                // the byte index of the start,end points in the ASCII view
+                startByte -= startRows
+                startByte /= 3
+                endByte -= endRows
+                endByte /= 3
+
+                if (hexLastSelectionStart == startByte && hexLastSelectionEnd == endByte) {
+                    return
+                }
+                hexLastSelectionStart = startByte
+                hexLastSelectionEnd = endByte
+
+                setSelection(startByte, endByte)
             }
-            asciiLastSelectionStart = startByte
-            asciiLastSelectionEnd = endByte
-
-            this.setSelection(startByte, endByte)
-        } else if (e.source === this.hexView) {
-            var startByte = e.mark
-            var endByte = e.dot
-
-            if (startByte > endByte) {
-                val t = endByte
-                endByte = startByte
-                startByte = t
-            }
-
-            // the number of line endings before the start,end points
-            val startRows = (startByte - startByte % bytesPerLine) / (3 * bytesPerLine)
-            val endRows = (endByte - endByte % bytesPerLine) / (3 * bytesPerLine)
-
-            // the byte index of the start,end points in the ASCII view
-            startByte -= startRows
-            startByte /= 3
-            endByte -= endRows
-            endByte /= 3
-
-            if (hexLastSelectionStart == startByte && hexLastSelectionEnd == endByte) {
-                return
-            }
-            hexLastSelectionStart = startByte
-            hexLastSelectionEnd = endByte
-
-            setSelection(startByte, endByte)
-        } else {
-            println("from unknown")
+            else -> println("from unknown")
         }
     }
 
@@ -171,6 +173,10 @@ constructor(bytes: ByteBuffer, private val bytesPerLine: Int = DEFAULT_BYTES_PER
             aFile.close()
 
             fillFromByteBuffer(buffer)
+
+            asciiView.caretPosition = 0
+            hexView.caretPosition = 0
+            offsetView.caretPosition = 0
         } catch (e: Exception) {
 
         }
