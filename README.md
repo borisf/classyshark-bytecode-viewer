@@ -7,8 +7,7 @@ To run, grab the [latest JAR](https://github.com/borisf/classyshark-bytecode-vie
 and run `java -jar ClassySharkBytecodeViewer.jar`. Optionally you can add a class file to open.
 
 ## Why
-Instantaneously understand your Kotlin code on a [class](https://en.wikipedia.org/wiki/Java_class_file) and in hex view.
-
+Instantaneously understand and assess any Kotlin code.
 ## How
 The most accurate and measurable way is to look at Kotlin generated executable (.class) files, the same files that both JVM and Android DX tool see. 
 
