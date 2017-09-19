@@ -7,20 +7,22 @@ To run, grab the [latest JAR](https://github.com/borisf/classyshark-bytecode-vie
 and run `java -jar ClassySharkBytecodeViewer.jar`. Optionally you can add a class file to open.
 
 ## Why
-Instantaneously assess performance impact of your Kotlin code on a [class](https://en.wikipedia.org/wiki/Java_class_file) level.
+Instantaneously understand your Kotlin code on a [class](https://en.wikipedia.org/wiki/Java_class_file) and in hex view.
 
 ## How
 The most accurate and measurable way is to look at Kotlin generated executable (.class) files, the same files that both JVM and Android DX tool see. 
 
 ## What
-From every kotlin-compiler generated class file you will see 2 tabs:
+From every kotlin-compiler generated class file you will see 3 tabs:
 
 1. Equivalent Java code
-2. Raw class file internals
+2. Equivalent Java bytecode
+3. Hex view
  
 The (mind) flow will be as follows:
 1. From Kotlin code to Java code
 2. From Java code to Java bytecode (class format)
+3. From Java code to hex view (raw binary format)
  
 Here is the tricky part, instead of doing source to source translation from Kotlin to Java, it is 
 better (faster and accurate) to decompile Kotlin generated class file right into Java.
