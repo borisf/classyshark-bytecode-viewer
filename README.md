@@ -21,7 +21,7 @@ From every kotlin-compiler generated class file you will see 3 tabs:
 The (mind) flow will be as follows:
 1. From Kotlin code to Java code
 2. From Java code to Java bytecode (class format)
-3. From Java code to hex view (raw binary format)
+3. From Java bytecode to hex view (raw binary format)
  
 Here is the tricky part, instead of doing source to source translation from Kotlin to Java, it is 
 better (faster and accurate) to decompile Kotlin generated class file right into Java.
