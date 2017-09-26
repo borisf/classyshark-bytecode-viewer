@@ -65,7 +65,7 @@ constructor(directoryName: String, private val fileName: String,
             }
         }
     }
-    
+
     private fun setCommand(command: String) {
         val old = this.command
         this.command = command + (commandIndex++)
