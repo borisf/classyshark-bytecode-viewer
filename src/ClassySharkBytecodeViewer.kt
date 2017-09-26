@@ -200,7 +200,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         if(!file.exists()) {
             return
         }
-        
+
         javaArea.caretPosition = 0
         val inputStream = FileInputStream(file)
         val reader = ClassReader(inputStream)
