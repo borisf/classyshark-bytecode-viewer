@@ -133,21 +133,19 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         }
     }
 
-    fun onFileLoaded(file: File) {
-        try {
-            this.loadedFile = file
-            title = panelTitle + " - " + file.name
+    fun onFileLoaded(externalFile: File) = try {
+        this.loadedFile = externalFile
+        title = panelTitle + " - " + externalFile.name
 
-            fillJavaArea(file)
-            fillAsmArea(file)
-            hexArea.fillFromFile(file)
+        fillJavaArea(externalFile)
+        fillAsmArea(externalFile)
+        hexArea.fillFromFile(externalFile)
 
-            watchLoadedFileChanges(file)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+        watchLoadedFileChanges(externalFile)
+    } catch (e: FileNotFoundException) {
+        e.printStackTrace()
+    } catch (e: IOException) {
+        e.printStackTrace()
     }
 
     private fun openButtonPressed() {
@@ -173,6 +171,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
         try {
             title = panelTitle + " - " + loadedFile.name
             searchText.text = ""
+
             fillJavaArea(loadedFile)
             fillAsmArea(loadedFile)
             hexArea.fillFromFile(loadedFile)
@@ -198,6 +197,10 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     }
 
     private fun fillAsmArea(file: File) {
+        if(!file.exists()) {
+            return
+        }
+        
         javaArea.caretPosition = 0
         val inputStream = FileInputStream(file)
         val reader = ClassReader(inputStream)
@@ -210,6 +213,9 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     }
 
     private fun fillJavaArea(file: File) {
+        if(!file.exists()) {
+            return
+        }
 
         val writer = StringWriter()
 

@@ -24,6 +24,7 @@ constructor(directoryName: String, private val fileName: String,
 
     private val watcher: WatchService = FileSystems.getDefault().newWatchService()
     private val pcs: PropertyChangeSupport
+    private var commandIndex: Int = 0
 
     private var command: String? = null
 
@@ -39,6 +40,7 @@ constructor(directoryName: String, private val fileName: String,
             val key: WatchKey
             try {
                 key = watcher.take()
+
             } catch (ex: InterruptedException) {
                 return
             }
@@ -53,7 +55,9 @@ constructor(directoryName: String, private val fileName: String,
                 println(commandText)
 
                 if (fileName.endsWith(this.fileName)) {
-                    setCommand(commandText)
+                    if (event != ENTRY_DELETE) {
+                        setCommand(commandText)
+                    }
                 }
             }
 
@@ -64,9 +68,11 @@ constructor(directoryName: String, private val fileName: String,
         }
     }
 
+
+
     private fun setCommand(command: String) {
         val old = this.command
-        this.command = command
+        this.command = command + (commandIndex++)
         pcs.firePropertyChange("command", old, command)
     }
 
