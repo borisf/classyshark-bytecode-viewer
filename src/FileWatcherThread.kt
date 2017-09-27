@@ -19,17 +19,17 @@ import java.nio.file.StandardWatchEventKinds.*
 
 // todo make package com.borisfarber.csviewer
 class FileWatcherThread @Throws(Exception::class)
-constructor(directoryName: String, private val fileName: String,
+constructor(directoryName: String, private val fileNameToWatch: String,
             listener:PropertyChangeListener) : Thread() {
 
-    private val watcher: WatchService = FileSystems.getDefault().newWatchService()
+    private val watchService: WatchService = FileSystems.getDefault().newWatchService()
     private val pcs: PropertyChangeSupport
     private var commandIndex: Int = 0
     private var command: String? = null
 
     init {
         val dir = Paths.get(directoryName)
-        dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+        dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
         println("Watch Service registered for dir: " + dir.fileName)
         this.pcs = PropertyChangeSupport(listener)
     }
@@ -38,7 +38,7 @@ constructor(directoryName: String, private val fileName: String,
         while (true) {
             val key: WatchKey
             try {
-                key = watcher.take()
+                key = watchService.take()
             } catch (ex: InterruptedException) {
                 return
             }
@@ -52,9 +52,9 @@ constructor(directoryName: String, private val fileName: String,
                 val commandText = kind.name() + ": " + fileName
                 println(commandText)
 
-                if (fileName.endsWith(this.fileName)) {
+                if (fileName.endsWith(this.fileNameToWatch)) {
                     if (event != ENTRY_DELETE) {
-                        setCommand(commandText)
+                        fireFileChange(commandText)
                     }
                 }
             }
@@ -66,7 +66,7 @@ constructor(directoryName: String, private val fileName: String,
         }
     }
 
-    private fun setCommand(command: String) {
+    private fun fireFileChange(command: String) {
         val old = this.command
         this.command = command + (commandIndex++)
         pcs.firePropertyChange("command", old, command)
