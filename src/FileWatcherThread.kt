@@ -12,6 +12,7 @@
  * permissions and limitations under the License.
  */
 
+import ClassySharkBytecodeViewer.ClassRecomplied.CLASS_RECOMPILED
 import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import java.nio.file.*
@@ -19,17 +20,16 @@ import java.nio.file.StandardWatchEventKinds.*
 
 // todo make package com.borisfarber.csviewer
 class FileWatcherThread @Throws(Exception::class)
-constructor(directoryName: String, private val fileName: String,
+constructor(directoryName: String, private val fileNameToWatch: String,
             listener:PropertyChangeListener) : Thread() {
 
-    private val watcher: WatchService = FileSystems.getDefault().newWatchService()
+    private val watchService: WatchService = FileSystems.getDefault().newWatchService()
     private val pcs: PropertyChangeSupport
-
-    private var command: String? = null
+    private var fileChangeIndex: Int = 0
 
     init {
         val dir = Paths.get(directoryName)
-        dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
+        dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
         println("Watch Service registered for dir: " + dir.fileName)
         this.pcs = PropertyChangeSupport(listener)
     }
@@ -38,7 +38,7 @@ constructor(directoryName: String, private val fileName: String,
         while (true) {
             val key: WatchKey
             try {
-                key = watcher.take()
+                key = watchService.take()
             } catch (ex: InterruptedException) {
                 return
             }
@@ -52,8 +52,10 @@ constructor(directoryName: String, private val fileName: String,
                 val commandText = kind.name() + ": " + fileName
                 println(commandText)
 
-                if (fileName.endsWith(this.fileName)) {
-                    setCommand(commandText)
+                if (fileName.endsWith(this.fileNameToWatch)) {
+                    if (event != ENTRY_DELETE) {
+                        fireFileChange()
+                    }
                 }
             }
 
@@ -64,10 +66,10 @@ constructor(directoryName: String, private val fileName: String,
         }
     }
 
-    private fun setCommand(command: String) {
-        val old = this.command
-        this.command = command
-        pcs.firePropertyChange("command", old, command)
+    private fun fireFileChange() {
+        val old = this.fileChangeIndex
+        fileChangeIndex++
+        pcs.firePropertyChange(CLASS_RECOMPILED, old, fileChangeIndex)
     }
 
     fun addPropertyChangeListener(listener: PropertyChangeListener) {

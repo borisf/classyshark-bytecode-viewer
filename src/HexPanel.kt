@@ -160,6 +160,11 @@ constructor(bytes: ByteBuffer, private val bytesPerLine: Int = DEFAULT_BYTES_PER
     }
 
     fun fillFromFile(classFile: File) {
+
+        if(!classFile.exists()) {
+            return
+        }
+
         try {
             val aFile = RandomAccessFile(classFile, "r")
             val inChannel = aFile.channel
