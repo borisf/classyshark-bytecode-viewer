@@ -48,7 +48,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     }
 
     object ClassRecomplied {
-        @JvmStatic val CLASS_RECOMPILED= "ClassRecompiled"
+        const val CLASS_RECOMPILED= "ClassRecompiled"
     }
     
     init {
