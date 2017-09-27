@@ -12,6 +12,7 @@
  * permissions and limitations under the License.
  */
 
+import ClassySharkBytecodeViewer.ClassRecomplied.CLASS_RECOMPILED
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.util.TraceClassVisitor
 import java.awt.BorderLayout
@@ -44,6 +45,10 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
                 "       Drag your class file over here ....\n" +
                 "\n\n\n\n\n       ClassyShark ByteCode Viewer ver." +
                 Version.MAJOR + "." + Version.MINOR
+    }
+
+    object ClassRecomplied {
+        @JvmStatic val CLASS_RECOMPILED= "ClassRecompiled"
     }
     
     init {
@@ -124,7 +129,7 @@ class ClassySharkBytecodeViewer: JFrame(), PropertyChangeListener {
     }
 
     override fun propertyChange(evt: PropertyChangeEvent) {
-        if (evt.propertyName == "command") {
+        if (evt.propertyName == CLASS_RECOMPILED) {
             // Received new command (outside EDT)
             SwingUtilities.invokeLater {
                 // Updating GUI inside EDT

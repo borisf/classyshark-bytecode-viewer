@@ -12,6 +12,7 @@
  * permissions and limitations under the License.
  */
 
+import ClassySharkBytecodeViewer.ClassRecomplied.CLASS_RECOMPILED
 import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeSupport
 import java.nio.file.*
@@ -24,8 +25,7 @@ constructor(directoryName: String, private val fileNameToWatch: String,
 
     private val watchService: WatchService = FileSystems.getDefault().newWatchService()
     private val pcs: PropertyChangeSupport
-    private var commandIndex: Int = 0
-    private var command: String? = null
+    private var fileChangeIndex: Int = 0
 
     init {
         val dir = Paths.get(directoryName)
@@ -54,7 +54,7 @@ constructor(directoryName: String, private val fileNameToWatch: String,
 
                 if (fileName.endsWith(this.fileNameToWatch)) {
                     if (event != ENTRY_DELETE) {
-                        fireFileChange(commandText)
+                        fireFileChange()
                     }
                 }
             }
@@ -66,10 +66,10 @@ constructor(directoryName: String, private val fileNameToWatch: String,
         }
     }
 
-    private fun fireFileChange(command: String) {
-        val old = this.command
-        this.command = command + (commandIndex++)
-        pcs.firePropertyChange("command", old, command)
+    private fun fireFileChange() {
+        val old = this.fileChangeIndex
+        fileChangeIndex++
+        pcs.firePropertyChange(CLASS_RECOMPILED, old, fileChangeIndex)
     }
 
     fun addPropertyChangeListener(listener: PropertyChangeListener) {
