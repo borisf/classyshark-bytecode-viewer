@@ -4,7 +4,7 @@
 
 ## Download & Run
 To run, grab the [latest JAR](https://github.com/borisf/classyshark-bytecode-viewer/releases)
-and run `java -jar ClassySharkBytecodeViewer.jar`. Optionally you can add a class file to open.
+and run `java -jar classyshark-bytecode-viewer.jar`. Optionally you can add a class file to open.
 
 ## Why
 Instantaneously understand and assess any Kotlin code.
